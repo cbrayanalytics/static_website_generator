@@ -41,7 +41,6 @@ class Test_TextNode_to_HTMLNode(unittest.TestCase):
 
     ## Test "link" type
     def test_link_type(self):
-        print("testing link_type")
         node = TextNode("This is some anchor text", "link", "http://www.example.com")
         result = text_node_to_html_node(node)
         self.assertEqual(
@@ -55,6 +54,7 @@ class Test_TextNode_to_HTMLNode(unittest.TestCase):
             "This is a photo of a butterfly", "image", "https://example.butterfly.com"
         )
         result = text_node_to_html_node(node)
+        self.assertEqual(result.tag, "img")
         self.assertEqual(
             result.to_html(),
             '<img src="https://example.butterfly.com" alt="This is a photo of a butterfly"></img>',
