@@ -1,7 +1,11 @@
 import unittest
 
 from textnode import TextNode
-from splitnode import split_nodes_delimiter
+from splitnode import (
+    extract_markdown_images,
+    extract_markdown_links,
+    split_nodes_delimiter,
+)
 
 text_type_text = "text"
 text_type_bold = "bold"
@@ -78,6 +82,28 @@ class TestTextNode(unittest.TestCase):
             return split_nodes_delimiter([node], "'", text_type_code)
 
         self.assertRaises(Exception, invalid_md)
+
+    ## Test extract_markdown_links
+    def test_extract_link(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+        test = extract_markdown_links(text)
+        result = [
+            ("to boot dev", "https://www.boot.dev"),
+            ("to youtube", "https://www.youtube.com/@bootdotdev"),
+        ]
+
+        self.assertEqual(test, result)
+
+    ## Test extract_markdown_images
+    def test_extract_image(self):
+        text = "This is a text with ![rowdy piper](https://example.org/first-time) and ![second roudn](https://example.org/second-time)"
+        test = extract_markdown_images(text)
+        result = [
+            ("rowdy piper", "https://example.org/first-time"),
+            ("second roudn", "https://example.org/second-time"),
+        ]
+
+        self.assertEqual(test, result)
 
 
 if __name__ == "__main__":
