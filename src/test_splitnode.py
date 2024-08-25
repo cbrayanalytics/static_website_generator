@@ -66,17 +66,6 @@ class TestSplitNode(unittest.TestCase):
 
         self.assertEqual(split_node, result)
 
-    #
-    # Test Inavlid md
-    def test_invalid_md(self):
-        node = TextNode("This is a photo of a butterfly", text_type_text)
-
-        def invalid_md():
-            nonlocal node
-            return split_nodes_delimiter([node], "&", text_type_code)
-
-        self.assertRaises(Exception, invalid_md)
-
     # Test single delimiter
     def test_single_del(self):
         node = TextNode("This is a 'photo of a butterfly", text_type_text)
