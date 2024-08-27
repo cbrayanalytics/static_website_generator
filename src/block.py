@@ -1,3 +1,49 @@
+import re
+
+
+## Take in a block of text and return its markdown type
+def block_to_block_type(blocktype):
+    type = "paragraph"
+
+    if re.findall(r"^\#{1,6}\ *", blocktype):
+        found = re.findall(r"^\#{1,6}\ *", blocktype)
+        type = "Header"
+        print(f"Header found: {found}")
+
+    if re.findall(r"^\`{3}|.*`{3}$", blocktype):
+        found = re.findall(r"^\`{3}.*\`{3}$", blocktype)
+        type = "code"
+        print(f"Code found: {found}")
+
+    if re.findall(r"^\>", blocktype):
+        found = re.findall(r"^\>", blocktype)
+        type = "quote"
+        print(f"Quote found: {found}")
+
+        #    if re.findall(r"^(?=[(\*\-)\s])", blocktype, re.MULTILINE):
+    if re.findall(r"(^\*\ )|(^\-\ )", blocktype, re.MULTILINE):
+        lines = blocktype.splitlines()
+
+        if len(lines) == 1:
+            type = "paragraph"
+            return type
+
+        count = 0
+        for line in lines:
+            if re.findall(r"(^\*\ )|(^\-\ )", line):
+                count += 1
+
+        if count == len(lines):
+            type = "unordered list"
+
+    # if re.findall(r"^(![\d+\.\s+])", blocktype, re.MULTILINE):
+    #     found = re.findall(r"^\*\ |^\-\ ", blocktype, re.MULTILINE)
+    #     type = "unordered list"
+    #     print(f"Unordered list found: {found}")
+
+    return type
+
+
 ## Take a markdown string as input and split into a list by separating
 ## with empty lines
 def markdown_to_blocks(markdown):
@@ -23,20 +69,10 @@ def markdown_to_blocks(markdown):
 
 
 def main():
-    text = """ # This is a heading
+    header = " \n this is a line "
 
-     This is a paragraph of text. It has some **bold** and *italic* words inside of it.
-
-
-
-
-
-
-     * This is the first list item in a list block
-     * This is a list item
-     * This is another list item  """
-
-    markdown_to_blocks(text)
+    print(f"header: {header}")
+    block_to_block_type(header)
 
 
 main()
