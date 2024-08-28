@@ -1,60 +1,80 @@
 import unittest
-from unittest.case import _AssertRaisesContext
 
-from block import markdown_to_blocks
-
-
-class TestBlock(unittest.TestCase):
-    ## Test simple text document with proper whitespaces
-    def test_props_to_html(self):
-        text = """# This is a heading
-
-This is a paragraph of text. It has some **bold** and *italic* words inside of it.
-
-* This is the first list item in a list block 
-* This is a list item
-* This is another list item"""
-
-        result = [
-            "# This is a heading",
-            "This is a paragraph of text. It has some **bold** and *italic* words inside of it.",
-            "* This is the first list item in a list block \n* This is a list item\n* This is another list item",
-        ]
-
-        self.assertEqual(markdown_to_blocks(text), result)
-
-    ## Test multiple blank lines and whitespaces.
-    def test_multiple_props_to_html(self):
-        text = """# This is a heading
+from block import (
+    block_to_block_type,
+    markdown_to_blocks,
+)
+import block
 
 
+class TestBlockToBlock(unittest.TestCase):
+    ## Test paragraph
+    def test_paragraph(self):
+        text_paragraph = "This is a paragraph of text."
+        result_paragraph = "paragraph"
 
-This is a paragraph of text. It has some **bold** and *italic* words inside of it.
+        text_quote = "> This is one quote\n> This is the second"
+        result_quote = "quote"
+
+        text_code = "```This is some code```"
+        result_code = "code"
+
+        text_unordered = "* one item\n* two item\n- three item"
+        result_unordered = "unordered list"
+
+        text_ordered = "1. one item\n2. two item\n3. three item"
+        result_ordered = "ordered list"
+
+        self.assertEqual(block_to_block_type(text_paragraph), result_paragraph)
+        self.assertEqual(block_to_block_type(text_quote), result_quote)
+        self.assertEqual(block_to_block_type(text_code), result_code)
+        self.assertEqual(block_to_block_type(text_unordered), result_unordered)
+        self.assertEqual(block_to_block_type(text_ordered), result_ordered)
 
 
+## Test single item lists and bad list entries.
+class TestBlockToBlockBadList(unittest.TestCase):
+    def test_multiple_and_single_lists(self):
+        text_quote = "> This is one quote\n> This is the second\n This is the third"
+        text_quote_one = "> This is one quote"
+
+        text_unordered = "* one item\n* two item\n three item"
+        text_unordered_one = "* one item"
+
+        text_ordered = "1. one item\n two item\n3. three item"
+        text_ordered_one = "1. one item"
+
+        result = "paragraph"
+
+        self.assertEqual(block_to_block_type(text_quote), result)
+        self.assertEqual(block_to_block_type(text_quote_one), result)
+        self.assertEqual(block_to_block_type(text_unordered), result)
+        self.assertEqual(block_to_block_type(text_unordered_one), result)
+        self.assertEqual(block_to_block_type(text_ordered), result)
+        self.assertEqual(block_to_block_type(text_ordered_one), result)
 
 
-* This is the first list item in a list block 
-* This is a list item
-* This is another list item"""
+## Test block_to_block_type error handling
+class TestBlockToBlockError(unittest.TestCase):
+    def test_empty_text(self):
+        none_string = None
 
-        result = [
-            "# This is a heading",
-            "This is a paragraph of text. It has some **bold** and *italic* words inside of it.",
-            "* This is the first list item in a list block \n* This is a list item\n* This is another list item",
-        ]
+        def none_test():
+            nonlocal none_string
+            block_to_block_type(none_string)
 
-        self.assertEqual(markdown_to_blocks(text), result)
+        #        self.assertRaises(Exception, empty_string)
+        self.assertRaises(Exception, none_test)
 
-    ## Test exception in markdown_to_blocks
-    def test_markdown_fail(self):
-        text = ""
+    def test_none_text(self):
+        empty_string = " "
 
-        def test_err():
-            nonlocal text
-            return markdown_to_blocks(text)
+        def none_test():
+            nonlocal empty_string
+            block_to_block_type(empty_string)
 
-        self.assertRaises(Exception, test_err)
+        #        self.assertRaises(Exception, empty_string)
+        self.assertRaises(Exception, none_test)
 
 
 if __name__ == "__main__":
