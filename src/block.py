@@ -1,5 +1,150 @@
 import re
 
+from htmlnode import LeafNode, ParentNode
+from splitnode import text_to_textnodes
+from textnode import text_node_to_html_node
+
+
+## Convert a FULL markdown document into a single HTML node.
+def markdown_to_html_node(markdown):
+    final_list = []
+
+    split_blocks = markdown_to_blocks(markdown)
+
+    for block in split_blocks:
+        type = block_to_block_type(block)
+        print(f"Type of block: {type}")
+
+        if type == "header":
+            final_list.append(block_to_header(block))
+
+        if type == "quote":
+            print("Type is a quote!")
+            final_list.append(block_to_quote(block))
+
+        if type == "unordered list":
+            final_list.append(block_to_unordered_list(block))
+
+        if type == "ordered list":
+            final_list.append(block_to_ordered_list(block))
+
+        if type == "code":
+            final_list.append(block_to_code(block))
+
+        if type == "paragraph":
+            final_list.append(block_to_paragraph(block))
+
+    return final_list
+
+    # print("Final list:\n")
+    # for item in final_list:
+    #     print(f"Item: {item}")
+    return final_list
+
+
+## Take a string input and return a list  f HTML nodes.
+def text_to_children(text):
+    result = []
+    node_list = text_to_textnodes(text)
+    for node in node_list:
+        result.append(text_node_to_html_node(node))
+
+    # if len(result) < 2:
+    #     return text
+
+    return result
+
+
+## Convert a block to a header.
+def block_to_header(text):
+    split = text.split(" ", 1)
+    tag = "h" + str(split[0].count("#"))
+    text = text_to_children(split[1])
+
+    return LeafNode(tag, text)
+
+
+## Convert a block to a quote.
+def block_to_quote(text):
+    tag = "blockquote"
+
+    text = text.replace("> ", "")
+    print(f"updated text: \n{text}")
+
+    # for line in split_text:
+    #     line = line.split("> ", 1)
+    nodes = text_to_children(text)
+    print(f"text to children results: \n{nodes}")
+    return LeafNode(tag, nodes)
+
+
+## Convert a block to an unordered list.
+def block_to_unordered_list(text):
+    final_list = []
+    item = "li"
+    tag = "ul"
+
+    split_list = text.split("\n")
+    print(f"split list is: \n{split_list}")
+
+    for line in split_list:
+        if line == "":
+            continue
+        print(f"Working on line... {line}")
+        line = line.replace("* ", "")
+        node = text_to_children(line)
+        final_list.append(LeafNode(item, node))
+
+    return ParentNode(tag, final_list)
+
+
+## Convert a block to an ordered list.
+def block_to_ordered_list(text):
+    final_list = []
+    item = "li"
+    tag = "ol"
+
+    split_list = text.split("\n")
+    print(f"split list is: \n{split_list}")
+
+    for line in split_list:
+        if line == "":
+            continue
+        print(f"Working on line... {line}")
+        line = line.split(".")
+        print(f"formatted line: {line[1]}")
+        node = text_to_children(line[1])
+        final_list.append(LeafNode(item, node))
+
+    return ParentNode(tag, final_list)
+
+
+## Convert a block to code node
+def block_to_code(text):
+    item = "code"
+    tag = "pre"
+    final_list = []
+
+    node = text_to_children(text)
+    for n in node:
+        if n == "":
+            continue
+        final_list.append(LeafNode(item, n))
+
+    return ParentNode(tag, final_list)
+
+
+## Convert a block to a paragraph node
+def block_to_paragraph(text):
+    tag = "p"
+
+    node = text_to_children(text)
+
+    if len(node) > 2:
+        return LeafNode(tag, node)
+    else:
+        return ParentNode(tag, node)
+
 
 ## Take in a block of text and return its markdown type
 def block_to_block_type(blocktype):
@@ -12,7 +157,7 @@ def block_to_block_type(blocktype):
     ## HEADER
     if re.findall(r"^\#{1,6}\ *", blocktype):
         found = re.findall(r"^\#{1,6}\ *", blocktype)
-        type = "Header"
+        type = "header"
 
     ## CODE
     if re.findall(r"^\`{3}|.*`{3}$", blocktype):
@@ -20,19 +165,20 @@ def block_to_block_type(blocktype):
         type = "code"
 
     ## QUOTE
-    if re.findall(r"^\>", blocktype):
+    if re.findall(r"^\>\ ", blocktype, re.MULTILINE):
         lines = blocktype.splitlines()
 
-        ## if only one line, then return "paragraph"
-        if len(lines) == 1:
-            return type
+        # ## if only one line, then return "paragraph"
+        # if len(lines) == 1:
+        #     return type
 
         ## Iterate through each line and deterimine if line starts with ">"
         count = 0
         for line in lines:
-            if re.findall(r"^\>", line):
+            if re.findall(r"^\>\ ", line):
                 count += 1
 
+        print(f"count: {count} lines: {len(lines)}")
         if count == len(lines):
             type = "quote"
 
@@ -88,17 +234,43 @@ def markdown_to_blocks(markdown):
 
     final_list = []
 
-    split_list = markdown.strip().split("\n\n")
+    split_list = markdown.split("\n\n")
 
     for line in split_list:
-        if line == "\n":
-            continue
-        if line == "":
-            continue
-        else:
-            line = line.strip()
-            final_list.append(line)
-
-    print(f"Final list: {final_list}")
+        final_list.append(line)
 
     return final_list
+
+
+def main():
+    #     quote = """> This is a **quote**
+    # > Here is another
+    # > Here is a third
+    # > and a fourth"
+    # """
+    #
+    #     unordered_list = """* list item one
+    # * list item two
+    # * list item three
+    # * list item four
+    # """
+    #
+    #     ordered_list = """1. List item one
+    # 2. List item two
+    # 3. List item two
+    # """
+
+    code = """```Here is some code
+Here is some more code
+Last bit of code```
+"""
+    paragraph = """This is a paragraph
+Here is some **bold** text
+Here is some *italic* text
+"""
+
+    result = markdown_to_html_node(code)
+    print(f"Final result is: {result}")
+
+
+main()

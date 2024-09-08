@@ -95,18 +95,19 @@ def main():
 
     result = node.to_html()
 
-    print(f"ParentNode to_html output: {result}")
 
-    # node = HTMLNode(
-    #     "a",
-    #     "Hello there!",
-    #     "children",
-    #     {"href": "http://example.com", "target": "_blank"},
-    # )
-    #
-    # result = node.props_to_html()
-    #
-    # print(f"repr output: {result}")
+#    print(f"ParentNode to_html output: {result}")
+
+# node = HTMLNode(
+#     "a",
+#     "Hello there!",
+#     "children",
+#     {"href": "http://example.com", "target": "_blank"},
+# )
+#
+# result = node.props_to_html()
+#
+# print(f"repr output: {result}")
 
 
-main()
+# main()

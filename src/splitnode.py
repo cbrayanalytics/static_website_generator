@@ -22,7 +22,6 @@ def text_to_textnodes(text):
     to_image = split_nodes_images(to_code)
     to_link = split_nodes_links(to_image)
 
-    print(f"Final Results: {to_link}")
     return to_link
 
 
@@ -38,6 +37,8 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             if len(split_text) % 2 == 0:
                 raise Exception(f"invalid markdown syntax: {delimiter}")
             for i in range(len(split_text)):
+                if split_text[i] == "":
+                    continue
                 if i % 2 != 0:
                     new_list.extend([TextNode(split_text[i], text_type)])
                 else:
@@ -121,7 +122,8 @@ def extract_markdown_links(text):
 
 def main():
     text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
-    result = text_to_textnodes(text)
+    text_two = "This is a **quote**"
+    result = text_to_textnodes(text_two)
 
     print(f"text_to_textnodes result: {result}")
 
@@ -154,4 +156,4 @@ def main():
     # print(f"split nodes links result: {new_nodes}")
 
 
-main()
+# main()
