@@ -95,8 +95,8 @@ def main():
 
     result = node.to_html()
 
+    print(f"ParentNode to_html output: {result}")
 
-#    print(f"ParentNode to_html output: {result}")
 
 # node = HTMLNode(
 #     "a",
