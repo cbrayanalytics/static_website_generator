@@ -1,6 +1,8 @@
+## Import required packages
 import re
 from textnode import TextNode
 
+## Assign inline node type values to variables.
 text_type_text = "text"
 text_type_bold = "bold"
 text_type_code = "code"
@@ -32,6 +34,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
     for node in old_nodes:
         if node.text_type != text_type_text:
             new_list.append(node)
+            continue
         else:
             split_text = node.text.split(delimiter)
             if len(split_text) % 2 == 0:
@@ -118,42 +121,3 @@ def extract_markdown_images(text):
 def extract_markdown_links(text):
     matches = re.findall(r"(?<!!)\[(.*?)\]\((.*?)\)", text)
     return matches
-
-
-def main():
-    text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
-    text_two = "This is a **quote**"
-    result = text_to_textnodes(text_two)
-
-    print(f"text_to_textnodes result: {result}")
-
-    # node = TextNode("This is **text** node", text_type_code)
-    # result = split_nodes_delimiter([node], "**", text_type_bold)
-    # print(f"Result: {result}")
-
-    # text = "This is a text with ![rowdy piper](https://example.org/first-time) and ![second roudn](https://example.org/second-time)"
-    # print(extract_markdown_images(text))
-    #
-    # text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
-    # print(extract_markdown_links(text))
-
-    # print("TEST ONE!!")
-    # node = TextNode(
-    #     "[to boot dev](https://www.boot.dev) This was a link [to youtube](https://www.youtube.com/@bootdotdev) here is another.",
-    #     text_type_text,
-    # )
-    #
-    # new_nodes = split_nodes_links([node])
-    # print(f"split nodes links result: {new_nodes}")
-    #
-    # print("TEST TWO!!")
-    # node = TextNode(
-    #     "This was a link [to boot dev](https://www.boot.dev) here is another [to youtube](https://www.youtube.com/@bootdotdev)",
-    #     text_type_text,
-    # )
-    #
-    # new_nodes = split_nodes_links([node])
-    # print(f"split nodes links result: {new_nodes}")
-
-
-# main()

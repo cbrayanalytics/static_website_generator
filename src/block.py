@@ -1,6 +1,7 @@
+## Import required packages
 import re
 from htmlnode import ParentNode
-from splitnode import text_to_textnodes
+from splitnode import split_nodes_links, text_to_textnodes
 from textnode import text_node_to_html_node
 
 
@@ -65,7 +66,6 @@ def block_to_quote(text):
         parsed.append(line.lstrip("> ").strip())
     result = " ".join(parsed)
     children = text_to_children(result)
-    print(f"Text to children output:\n{children}")
     return ParentNode("blockquote", children)
 
 
@@ -92,7 +92,6 @@ def block_to_ordered_list(text):
         if line == "":
             continue
         item = line[3:]
-        print(f"line item: {item}")
         children = text_to_children(item)
         line_items.append(ParentNode("li", children))
 
@@ -101,7 +100,7 @@ def block_to_ordered_list(text):
 
 ## Convert a block to code node
 def block_to_code(text):
-    lines = text[3:-3].strip()
+    lines = text.replace("```", "").strip()
     children = text_to_children(lines)
     code = ParentNode("code", children)
     return ParentNode("pre", [code])
@@ -112,7 +111,6 @@ def block_to_paragraph(text):
     lines = text.split("\n")
     result = " ".join(lines)
     children = text_to_children(result)
-    print(f"Text to children output:\n{children}")
     return ParentNode("p", children)
 
 
@@ -142,7 +140,6 @@ def block_to_block_type(blocktype):
             if re.findall(r"^\>\ ", line):
                 count += 1
 
-        print(f"count: {count} lines: {len(lines)}")
         if count == len(lines):
             type = "quote"
 
@@ -164,17 +161,13 @@ def block_to_block_type(blocktype):
             type = "unordered list"
 
     ## ORDERED LIST
-    if re.findall(r"^[1-9]\.\ ", blocktype):
-        ## Split text into list of lines by \n.
-        ## Take list and get a count of lines.
+    if re.findall(
+        r"^[1-9]\.\ ", blocktype
+    ):  ## Split text into list of lines by \n. ## Take list and get a count of lines.
         split_text = blocktype.splitlines()
 
         ## Add + 1 to "line_count" to account for pythong starting at "0"
         line_count = len(split_text) + 1
-
-        ## If list is one item or less, return as "paragraph"
-        if line_count <= 2:
-            return type
 
         count = 1
         for text in split_text:
@@ -204,40 +197,3 @@ def markdown_to_blocks(markdown):
         final_list.append(line)
 
     return final_list
-
-
-def main():
-    code = """```Here is some code
-Here is some more code
-Last bit of code```
-"""
-
-
-ordered_list = """1. This is a paragraph
-2. Here is some **bold** text
-3. Here is some *italic* text
-"""
-
-unordered_list = """- This is a paragraph
-* Here is some **bold** text
-- Here is some *italic* text
-"""
-
-quote = """>This is a text_quote\n> Here is another\n> and another"""
-para = "Here is a *paragraph* of **text**"
-header = "## This is a header"
-quote = markdown_to_html_node(
-    """>This is a text_quote\n> Here is another\n> and another"""
-)
-code = markdown_to_html_node("""```Here is some code\n and some more```""")
-
-# end = markdown_to_html_node(quote)
-
-text_quote = "> This is a quote\n> Here is another."
-
-result = block_to_block_type(text_quote)
-
-print(f"block type: {result}")
-
-
-main()

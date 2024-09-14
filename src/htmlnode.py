@@ -55,13 +55,6 @@ class ParentNode(HTMLNode):
         if self.children is None:
             raise ValueError("all parent nodes must have a children")
 
-        # string = ""
-        # for child in self.children:
-        #     print(f"Child: {child}")
-        #     result = child.to_html()
-        #     print(f"Formatted child: {result}")
-        #     string = string + result
-
         def child_to_string(result, child):
             if len(child) == 0:
                 return result
@@ -73,41 +66,3 @@ class ParentNode(HTMLNode):
 
         string = f"<{self.tag}>" + result + f"</{self.tag}>"
         return string
-
-
-def main():
-    node = ParentNode(
-        "p",
-        [
-            LeafNode("b", "Bold text"),
-            LeafNode(None, "Normal text"),
-            LeafNode("i", "italic text"),
-            LeafNode(None, "Normal text"),
-            ParentNode(
-                "d",
-                [
-                    LeafNode("b", "nested bold text"),
-                    LeafNode("i", "nested italic text"),
-                ],
-            ),
-        ],
-    )
-
-    result = node.to_html()
-
-    print(f"ParentNode to_html output: {result}")
-
-
-# node = HTMLNode(
-#     "a",
-#     "Hello there!",
-#     "children",
-#     {"href": "http://example.com", "target": "_blank"},
-# )
-#
-# result = node.props_to_html()
-#
-# print(f"repr output: {result}")
-
-
-# main()
